@@ -40,16 +40,19 @@ public class Evaluator
 
     public boolean processParentheses(Operator newOperator)
     {
-        if (newOperator.equals(Operator.operatorHashMap.get("("))) {
+        if (newOperator == Operator.operatorHashMap.get("(")) {
             operatorStack.push(newOperator);
             return false;
-        } else if (newOperator.equals(Operator.operatorHashMap.get(")"))) {
-            while (!operatorStack.peek().equals(Operator.operatorHashMap.get("("))) {
+        } else if (newOperator == Operator.operatorHashMap.get(")")) {
+            while (operatorStack.peek() != Operator.operatorHashMap.get("(")) {
                 performOperation();
             }
             operatorStack.pop();
             return false;
         } else {
+            while (operatorStack.peek().priority() >= newOperator.priority()) {
+                performOperation();
+            }
             operatorStack.push(newOperator);
             return true;
         }
@@ -62,6 +65,10 @@ public class Evaluator
         // The 3rd argument is true to indicate that the delimiters should be used
         // as tokens, too. But, we'll need to remember to filter out spaces.
         this.tokenizer = new StringTokenizer(expression, DELIMITERS, true);
+
+        if (operatorStack.size() == 0) {
+            operatorStack.push(new PlaceholderOperator());
+        }
 
         while (this.tokenizer.hasMoreTokens()) {
             // filter out spaces
@@ -78,15 +85,19 @@ public class Evaluator
                     // TODO Operator is abstract - this line will need to be fixed:
                     // ( The Operator class should contain an instance of a HashMap,
                     // and values will be instances of the Operators.  See Operator class
-                    // skeleton for an example. )
+                    // skeleton for an example.
+
                     Operator newOperator = Operator.operatorHashMap.get(token);
+
 
                     if (processParentheses(newOperator)) {
                         continue;
                     }
 
                     if (operandStack.size() >= 2) {
+
                         performOperation();
+
 
                     }
                 }
