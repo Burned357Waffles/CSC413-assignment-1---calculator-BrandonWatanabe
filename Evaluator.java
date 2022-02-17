@@ -1,3 +1,6 @@
+import operand.Operand;
+import operators.*;
+
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -78,7 +81,7 @@ public class Evaluator
         while (operatorStack.size() > 1) {
             performOperation();
         }
-        
+
         return operandStack.pop().getValue();
     }
 }
